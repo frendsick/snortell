@@ -16,3 +16,8 @@ instance Applicative Parser where
     (f, input') <- p1 input
     (result, input'') <- p2 input'
     Just (f result, input'')
+
+instance Monad Parser where
+  (Parser p1) >>= f = Parser $ \input -> do
+    (result, input') <- p1 input
+    runParser (f result) input'
