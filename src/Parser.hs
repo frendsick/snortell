@@ -21,3 +21,11 @@ instance Monad Parser where
   (Parser p1) >>= f = Parser $ \input -> do
     (result, input') <- p1 input
     runParser (f result) input'
+
+charParser :: Char -> Parser Char
+charParser c = Parser parseChar
+  where
+    parseChar [] = Nothing
+    parseChar (x : input)
+      | x == c = Just (c, input)
+      | otherwise = Nothing
