@@ -1,6 +1,7 @@
 module Parser where
 
 import Control.Applicative
+import Data.Char (isSpace)
 
 newtype Parser a = Parser
   { runParser :: String -> Maybe (a, String)
@@ -39,3 +40,18 @@ charParser c = Parser parseChar
 
 strParser :: String -> Parser String
 strParser = mapM charParser
+
+spanParser :: (Char -> Bool) -> Parser String
+spanParser f =
+  Parser $ \input ->
+    Just (span f input)
+
+ws :: Parser String
+ws = spanParser isSpace
+
+parseWithWS :: Parser a -> String -> Maybe (String, a)
+parseWithWS parser input = do
+  (_, input) <- runParser ws input
+  (result, input) <- runParser parser input
+  (_, input) <- runParser ws input
+  return (input, result)
