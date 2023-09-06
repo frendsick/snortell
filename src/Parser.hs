@@ -29,3 +29,6 @@ charParser c = Parser parseChar
     parseChar (x : input)
       | x == c = Just (c, input)
       | otherwise = Nothing
+
+strParser :: String -> Parser String
+strParser = mapM charParser
