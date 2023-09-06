@@ -28,6 +28,17 @@ data SnortRule = SnortRule
   }
   deriving (Show)
 
+-- No proper error handling
+parseSnort :: String -> Maybe SnortRule
+parseSnort input = do
+  (input, action) <- parseWithWS snortAction input
+  (input, protocol) <- parseWithWS snortProtocol input
+
+  -- Parsing failed if there is input left to be parsed
+  if not (null input)
+    then Nothing
+    else Just SnortRule {action, protocol}
+
 snortAction :: Parser SnortAction
 snortAction = parser <$> foldr1 (<|>) (map strParser actions)
   where
