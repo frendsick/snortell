@@ -1,5 +1,7 @@
 module Parser where
 
+import Control.Applicative
+
 newtype Parser a = Parser
   { runParser :: String -> Maybe (a, String)
   }
@@ -21,6 +23,11 @@ instance Monad Parser where
   (Parser p1) >>= f = Parser $ \input -> do
     (result, input') <- p1 input
     runParser (f result) input'
+
+instance Alternative Parser where
+  empty = Parser $ const Nothing
+
+  (Parser p1) <|> (Parser p2) = Parser $ \input -> p1 input <|> p2 input
 
 charParser :: Char -> Parser Char
 charParser c = Parser parseChar
