@@ -15,8 +15,16 @@ data SnortAction
   | SnortSdrop
   deriving (Eq, Show)
 
+data SnortProtocol
+  = ICMP
+  | IP
+  | TCP
+  | UDP
+  deriving (Eq, Show)
+
 data SnortRule = SnortRule
-  { action :: SnortAction
+  { action :: SnortAction,
+    protocol :: SnortProtocol
   }
   deriving (Show)
 
@@ -31,3 +39,13 @@ snortAction = parser <$> foldr1 (<|>) (map strParser actions)
     parser "reject" = SnortReject
     parser "sdrop" = SnortSdrop
     parser action = error ("Parsing action '" ++ action ++ "' is not implemented")
+
+snortProtocol :: Parser SnortProtocol
+snortProtocol = parser <$> foldr1 (<|>) (map strParser protocols)
+  where
+    protocols = ["icmp", "ip", "tcp", "udp"]
+    parser "icmp" = ICMP
+    parser "ip" = IP
+    parser "tcp" = TCP
+    parser "udp" = UDP
+    parser protocol = error ("Parsing protocol '" ++ protocol ++ "' is not implemented")
