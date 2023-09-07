@@ -49,13 +49,13 @@ data SnortRule = SnortRule
 
 parseSnort :: String -> Either String SnortRule
 parseSnort input = do
-  (input, action) <- Right =<< parseWithWS snortAction input
-  (input, protocol) <- Right =<< parseWithWS snortProtocol input
-  (input, srcIp) <- Right =<< parseWithWS ipParser input
-  (input, srcPort) <- Right =<< parseWithWS snortPortRange input
-  (input, direction) <- Right =<< parseWithWS snortDirection input
-  (input, dstIp) <- Right =<< parseWithWS ipParser input
-  (input, dstPort) <- Right =<< parseWithWS snortPortRange input
+  (input, action) <- parseWithWS snortAction input
+  (input, protocol) <- parseWithWS snortProtocol input
+  (input, srcIp) <- parseWithWS ipParser input
+  (input, srcPort) <- parseWithWS snortPortRange input
+  (input, direction) <- parseWithWS snortDirection input
+  (input, dstIp) <- parseWithWS ipParser input
+  (input, dstPort) <- parseWithWS snortPortRange input
 
   -- Could not parse the full rule if there is input left
   if not (null input)
