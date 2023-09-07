@@ -27,6 +27,9 @@ instance Monad Parser where
     (result, input') <- p1 input
     runParser (f result) input'
 
+instance MonadFail Parser where
+  fail message = Parser $ const Nothing
+
 instance Alternative Parser where
   empty = Parser $ const Nothing
 
