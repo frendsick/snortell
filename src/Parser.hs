@@ -41,6 +41,18 @@ charParser c = Parser parseChar
 strParser :: String -> Parser String
 strParser = mapM charParser
 
+intParser :: String -> Parser Int
+intParser digits = do
+  parsedDigits <- spanParser isDigit
+  if parsedDigits == digits
+    then maybe empty return (maybeInt digits)
+    else empty
+  where
+    maybeInt :: String -> Maybe Int
+    maybeInt input = case reads input of
+      [(x, "")] -> Just x
+      _ -> Nothing
+
 spanParser :: (Char -> Bool) -> Parser String
 spanParser f =
   Parser $ \input ->
