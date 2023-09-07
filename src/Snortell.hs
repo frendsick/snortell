@@ -3,6 +3,7 @@
 module Snortell where
 
 import Control.Applicative
+import IP (IPv4)
 import Parser
 
 -- http://manual-snort-org.s3-website-us-east-1.amazonaws.com/node29.html
@@ -24,7 +25,8 @@ data SnortProtocol
 
 data SnortRule = SnortRule
   { action :: SnortAction,
-    protocol :: SnortProtocol
+    protocol :: SnortProtocol,
+    ip :: IPv4
   }
   deriving (Show)
 
@@ -33,11 +35,12 @@ parseSnort :: String -> Maybe SnortRule
 parseSnort input = do
   (input, action) <- parseWithWS snortAction input
   (input, protocol) <- parseWithWS snortProtocol input
+  (input, ip) <- parseWithWS ipParser input
 
   -- Parsing failed if there is input left to be parsed
   if not (null input)
     then Nothing
-    else Just SnortRule {action, protocol}
+    else Just SnortRule {action, protocol, ip}
 
 snortAction :: Parser SnortAction
 snortAction = parser <$> foldr1 (<|>) (map strParser actions)
