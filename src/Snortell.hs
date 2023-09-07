@@ -3,6 +3,7 @@
 module Snortell where
 
 import Control.Applicative
+import Data.Functor
 import IP (IPv4)
 import Parser
 
@@ -23,11 +24,17 @@ data SnortProtocol
   | UDP
   deriving (Eq, Show)
 
+data SnortDirection
+  = Bidirectional -- <>
+  | Unidirectional -- ->
+  deriving (Eq, Show)
+
 data SnortRule = SnortRule
   { action :: SnortAction,
     protocol :: SnortProtocol,
     srcIp :: IPv4,
-    dstIp :: IPv4
+    dstIp :: IPv4,
+    direction :: SnortDirection
   }
   deriving (Show)
 
@@ -38,11 +45,12 @@ parseSnort input = do
   (input, protocol) <- parseWithWS snortProtocol input
   (input, srcIp) <- parseWithWS ipParser input
   (input, dstIp) <- parseWithWS ipParser input
+  (input, direction) <- parseWithWS snortDirection input
 
   -- Parsing failed if there is input left to be parsed
   if not (null input)
     then Nothing
-    else Just SnortRule {action, protocol, srcIp, dstIp}
+    else Just SnortRule {action, protocol, srcIp, dstIp, direction}
 
 snortAction :: Parser SnortAction
 snortAction = parser <$> foldr1 (<|>) (map strParser actions)
@@ -65,3 +73,8 @@ snortProtocol = parser <$> foldr1 (<|>) (map strParser protocols)
     parser "tcp" = TCP
     parser "udp" = UDP
     parser protocol = error ("Parsing protocol '" ++ protocol ++ "' is not implemented")
+
+snortDirection :: Parser SnortDirection
+snortDirection =
+  (strParser "<>" $> Bidirectional)
+    <|> (strParser "->" $> Bidirectional)
