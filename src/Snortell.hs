@@ -53,26 +53,20 @@ parseSnort input = do
     else Just SnortRule {action, protocol, srcIp, dstIp, direction}
 
 snortAction :: Parser SnortAction
-snortAction = parser <$> foldr1 (<|>) (map strParser actions)
-  where
-    actions = ["alert", "drop", "log", "pass", "reject", "sdrop"]
-    parser "alert" = SnortAlert
-    parser "drop" = SnortDrop
-    parser "log" = SnortLog
-    parser "pass" = SnortPass
-    parser "reject" = SnortReject
-    parser "sdrop" = SnortSdrop
-    parser action = error ("Parsing action '" ++ action ++ "' is not implemented")
+snortAction =
+  (strParser "alert" $> SnortAlert)
+    <|> (strParser "drop" $> SnortDrop)
+    <|> (strParser "log" $> SnortLog)
+    <|> (strParser "pass" $> SnortPass)
+    <|> (strParser "reject" $> SnortReject)
+    <|> (strParser "sdrop" $> SnortSdrop)
 
 snortProtocol :: Parser SnortProtocol
-snortProtocol = parser <$> foldr1 (<|>) (map strParser protocols)
-  where
-    protocols = ["icmp", "ip", "tcp", "udp"]
-    parser "icmp" = ICMP
-    parser "ip" = IP
-    parser "tcp" = TCP
-    parser "udp" = UDP
-    parser protocol = error ("Parsing protocol '" ++ protocol ++ "' is not implemented")
+snortProtocol =
+  (strParser "icmp" $> ICMP)
+    <|> (strParser "ip" $> IP)
+    <|> (strParser "tcp" $> TCP)
+    <|> (strParser "udp" $> UDP)
 
 snortDirection :: Parser SnortDirection
 snortDirection =
