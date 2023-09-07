@@ -26,7 +26,8 @@ data SnortProtocol
 data SnortRule = SnortRule
   { action :: SnortAction,
     protocol :: SnortProtocol,
-    ip :: IPv4
+    srcIp :: IPv4,
+    dstIp :: IPv4
   }
   deriving (Show)
 
@@ -35,12 +36,13 @@ parseSnort :: String -> Maybe SnortRule
 parseSnort input = do
   (input, action) <- parseWithWS snortAction input
   (input, protocol) <- parseWithWS snortProtocol input
-  (input, ip) <- parseWithWS ipParser input
+  (input, srcIp) <- parseWithWS ipParser input
+  (input, dstIp) <- parseWithWS ipParser input
 
   -- Parsing failed if there is input left to be parsed
   if not (null input)
     then Nothing
-    else Just SnortRule {action, protocol, ip}
+    else Just SnortRule {action, protocol, srcIp, dstIp}
 
 snortAction :: Parser SnortAction
 snortAction = parser <$> foldr1 (<|>) (map strParser actions)
