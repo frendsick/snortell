@@ -3,7 +3,6 @@
 module Snortell where
 
 import Control.Applicative
-import Data.Char (isDigit)
 import Data.Functor
 import IP (IPv4)
 import Parser
@@ -30,12 +29,19 @@ data SnortDirection
   | Unidirectional -- ->
   deriving (Eq, Show)
 
+data SnortPortRange
+  = SinglePort Int
+  | PortRangeFrom Int
+  | PortRangeTo Int
+  | PortRange Int Int
+  deriving (Eq, Show)
+
 data SnortRule = SnortRule
   { action :: SnortAction,
     protocol :: SnortProtocol,
     direction :: SnortDirection,
-    srcPort :: Int,
-    dstPort :: Int,
+    srcPort :: SnortPortRange,
+    dstPort :: SnortPortRange,
     srcIp :: IPv4,
     dstIp :: IPv4
   }
@@ -88,18 +94,25 @@ snortDirection =
   (strParser "<>" $> Bidirectional)
     <|> (strParser "->" $> Bidirectional)
 
--- TODO: Port ranges
-snortPort :: Parser Int
-snortPort = do
-  digits <- spanParser isDigit
-  maybe (fail "Invalid port") validatePort (maybeInt digits)
+snortPort :: Parser SnortPortRange
+snortPort = portRange <|> portRangeFrom <|> portRangeTo <|> singlePort
   where
-    maybeInt :: String -> Maybe Int
-    maybeInt input = case reads input of
-      [(x, "")] -> Just x
-      x -> fail "Not an integer"
+    singlePort :: Parser SnortPortRange
+    singlePort = SinglePort <$> intParser
 
-    validatePort :: Int -> Parser Int
-    validatePort port
-      | 0 <= port && port <= 65535 = return port
-      | otherwise = fail "Port out of valid range (0-65535)"
+    portRange :: Parser SnortPortRange
+    portRange = do
+      start <- intParser
+      _ <- charParser ':'
+      PortRange start <$> intParser
+
+    portRangeTo :: Parser SnortPortRange
+    portRangeTo = do
+      _ <- charParser ':'
+      PortRangeTo <$> intParser
+
+    portRangeFrom :: Parser SnortPortRange
+    portRangeFrom = do
+      start <- intParser
+      _ <- charParser ':'
+      return (PortRangeFrom start)
