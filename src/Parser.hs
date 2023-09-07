@@ -46,12 +46,12 @@ charParser c = Parser parseChar
 strParser :: String -> Parser String
 strParser = mapM charParser
 
-intParser :: String -> Parser Int
-intParser digits = do
-  parsedDigits <- spanParser isDigit
-  if parsedDigits == digits
-    then maybe empty return (maybeInt digits)
-    else empty
+intParser :: Parser Int
+intParser = do
+  digits <- spanParser isDigit
+  case maybeInt digits of
+    Just x -> return x
+    Nothing -> fail "Invalid port"
   where
     maybeInt :: String -> Maybe Int
     maybeInt input = case reads input of
