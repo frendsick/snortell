@@ -1,7 +1,7 @@
 module Parser where
 
 import Control.Applicative
-import Data.Char (isSpace)
+import Data.Char (isDigit, isSpace)
 
 newtype Parser a = Parser
   { runParser :: String -> Maybe (a, String)
@@ -45,6 +45,24 @@ spanParser :: (Char -> Bool) -> Parser String
 spanParser f =
   Parser $ \input ->
     Just (span f input)
+
+ipParser :: Parser String
+ipParser = do
+  octet1 <- parseOctet
+  _ <- charParser '.'
+  octet2 <- parseOctet
+  _ <- charParser '.'
+  octet3 <- parseOctet
+  _ <- charParser '.'
+  octet4 <- parseOctet
+  return $ octet1 ++ "." ++ octet2 ++ "." ++ octet3 ++ "." ++ octet4
+  where
+    isValidOctet s = not (null s) && all isDigit s && read s <= 255
+    parseOctet = do
+      digits <- spanParser isDigit
+      if isValidOctet digits
+        then return digits
+        else empty
 
 ws :: Parser String
 ws = spanParser isSpace
