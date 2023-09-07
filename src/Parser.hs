@@ -72,11 +72,16 @@ ipParser = ipAddressParser <|> anyIPParser
         <*> (charParser '.' *> parseOctet)
         <*> (charParser '.' *> parseOctet)
 
-    parseOctet = do
-      digits <- spanParser isDigit
-      let parsedOctet = readInt digits
-      guard (0 <= parsedOctet && parsedOctet <= 255)
-      return parsedOctet
+    parseOctet =
+      spanParser isDigit >>= \digits ->
+        case digits of
+          [] -> empty -- Empty input
+          _ ->
+            case readInt digits of
+              -- Validate octet
+              parsedOctet
+                | 0 <= parsedOctet && parsedOctet <= 255 -> return parsedOctet
+                | otherwise -> empty
 
     readInt input = case reads input of
       [(x, "")] -> x
