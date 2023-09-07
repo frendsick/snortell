@@ -62,11 +62,11 @@ intParser = do
   case maybeInt digits of
     Just x -> return x
     Nothing -> fail "Invalid port"
-  where
-    maybeInt :: String -> Maybe Int
-    maybeInt input = case reads input of
-      [(x, "")] -> Just x
-      _ -> Nothing
+
+maybeInt :: String -> Maybe Int
+maybeInt input = case reads input of
+  [(x, "")] -> Just x
+  _ -> Nothing
 
 spanParser :: (Char -> Bool) -> Parser String
 spanParser f =
@@ -91,11 +91,6 @@ ipParser = anyIPParser <|> ipAddressParser
       case maybeInt digits of
         Just x -> return x
         Nothing -> fail "Invalid IP address octet"
-
-    maybeInt :: String -> Maybe Int
-    maybeInt input = case reads input of
-      [(x, "")] -> Just x
-      _ -> Nothing
 
 ws :: Parser String
 ws = spanParser isSpace
