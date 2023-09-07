@@ -47,22 +47,21 @@ data SnortRule = SnortRule
   }
   deriving (Show)
 
--- No proper error handling
-parseSnort :: String -> Maybe SnortRule
+parseSnort :: String -> Either String SnortRule
 parseSnort input = do
-  (input, action) <- parseWithWS snortAction input
-  (input, protocol) <- parseWithWS snortProtocol input
-  (input, srcIp) <- parseWithWS ipParser input
-  (input, srcPort) <- parseWithWS snortPort input
-  (input, direction) <- parseWithWS snortDirection input
-  (input, dstIp) <- parseWithWS ipParser input
-  (input, dstPort) <- parseWithWS snortPort input
+  (input, action) <- Right =<< parseWithWS snortAction input
+  (input, protocol) <- Right =<< parseWithWS snortProtocol input
+  (input, srcIp) <- Right =<< parseWithWS ipParser input
+  (input, srcPort) <- Right =<< parseWithWS snortPortRange input
+  (input, direction) <- Right =<< parseWithWS snortDirection input
+  (input, dstIp) <- Right =<< parseWithWS ipParser input
+  (input, dstPort) <- Right =<< parseWithWS snortPortRange input
 
-  -- Parsing failed if there is input left to be parsed
+  -- Could not parse the full rule if there is input left
   if not (null input)
-    then Nothing
+    then Left "Input is not fully parsed"
     else
-      Just
+      Right
         SnortRule
           { action,
             protocol,
@@ -81,6 +80,7 @@ snortAction =
     <|> (strParser "pass" $> SnortPass)
     <|> (strParser "reject" $> SnortReject)
     <|> (strParser "sdrop" $> SnortSdrop)
+    <|> fail "Unknown action"
 
 snortProtocol :: Parser SnortProtocol
 snortProtocol =
@@ -88,14 +88,21 @@ snortProtocol =
     <|> (strParser "ip" $> IP)
     <|> (strParser "tcp" $> TCP)
     <|> (strParser "udp" $> UDP)
+    <|> fail "Unknown protocol"
 
 snortDirection :: Parser SnortDirection
 snortDirection =
   (strParser "<>" $> Bidirectional)
     <|> (strParser "->" $> Bidirectional)
+    <|> fail "Invalid direction"
 
-snortPort :: Parser SnortPortRange
-snortPort = portRange <|> portRangeFrom <|> portRangeTo <|> singlePort
+snortPortRange :: Parser SnortPortRange
+snortPortRange =
+  portRange
+    <|> portRangeFrom
+    <|> portRangeTo
+    <|> singlePort
+    <|> fail "Could not parse port range"
   where
     singlePort :: Parser SnortPortRange
     singlePort = SinglePort <$> intParser
