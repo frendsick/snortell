@@ -2,6 +2,7 @@ module Parser where
 
 import Control.Applicative
 import Data.Char (isDigit, isSpace)
+import IP
 
 newtype Parser a = Parser
   { runParser :: String -> Maybe (a, String)
@@ -58,23 +59,28 @@ spanParser f =
   Parser $ \input ->
     Just (span f input)
 
-ipParser :: Parser String
-ipParser = do
-  octet1 <- parseOctet
-  _ <- charParser '.'
-  octet2 <- parseOctet
-  _ <- charParser '.'
-  octet3 <- parseOctet
-  _ <- charParser '.'
-  octet4 <- parseOctet
-  return $ octet1 ++ "." ++ octet2 ++ "." ++ octet3 ++ "." ++ octet4
+ipParser :: Parser IPv4
+ipParser = ipAddressParser <|> anyIPParser
   where
-    isValidOctet s = not (null s) && all isDigit s && read s <= 255
+    ipAddressParser = do
+      octet1 <- parseOctet
+      _ <- charParser '.'
+      octet2 <- parseOctet
+      _ <- charParser '.'
+      octet3 <- parseOctet
+      _ <- charParser '.'
+      IPv4Address octet1 octet2 octet3 <$> parseOctet
     parseOctet = do
       digits <- spanParser isDigit
-      if isValidOctet digits
-        then return digits
+      let parsedOctet = readInt digits
+      if isValidOctet parsedOctet
+        then return parsedOctet
         else empty
+    isValidOctet octet = 0 <= octet && octet <= 255
+    readInt input = case reads input of
+      [(x, "")] -> x
+      _ -> error "Invalid integer"
+    anyIPParser = strParser "any" >> return AnyIP
 
 ws :: Parser String
 ws = spanParser isSpace
