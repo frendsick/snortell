@@ -117,6 +117,7 @@ snortOptions = do
   strParser "(" <|> fail "Missing opening parentheses '(' after rule options"
   options <- some ruleOptionsParser <|> fail "Could not parse rule options"
   strParser ")" <|> fail "Missing closing parentheses ')' after rule options"
+  maybeWsParser -- Ignore possible leftover whitespace
 
   -- Snort rule ends to the options so the whole rule should be parsed
   remainingInput <- Parser $ \input -> Right (input, input)
