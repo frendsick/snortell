@@ -1,7 +1,5 @@
 module SnortRule where
 
-import IP (IPv4)
-
 -- https://docs.snort.org/rules/headers/actions
 data SnortAction
   = SnortAlert
@@ -28,6 +26,13 @@ data SnortDirection
   | Unidirectional -- ->
   deriving (Eq, Show)
 
+-- https://docs.snort.org/rules/headers/ips
+data SnortIP
+  = AnyIP
+  | IPVariable String
+  | IPv4Address Int Int Int Int
+  deriving (Eq, Show)
+
 -- https://docs.snort.org/rules/headers/ports
 data SnortPortRange
   = AnyPort
@@ -52,8 +57,8 @@ data SnortRule = SnortRule
     direction :: SnortDirection,
     srcPort :: SnortPortRange,
     dstPort :: SnortPortRange,
-    srcIp :: IPv4,
-    dstIp :: IPv4,
+    srcIp :: SnortIP,
+    dstIp :: SnortIP,
     options :: Maybe [SnortRuleOption]
   }
   deriving (Eq, Show)

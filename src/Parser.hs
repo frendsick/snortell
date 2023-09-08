@@ -4,7 +4,7 @@ import Control.Applicative
 import Control.Monad
 import Data.Char (isDigit, isSpace)
 import Data.List (isPrefixOf, singleton)
-import IP
+import SnortRule
 
 newtype Parser a = Parser
   { runParser :: String -> Either String (a, String)
@@ -81,7 +81,7 @@ spanParser f =
   Parser $ \input ->
     Right (span f input)
 
-ipParser :: Parser IPv4
+ipParser :: Parser SnortIP
 ipParser =
   IPv4Address
     <$> parseOctet

@@ -6,7 +6,6 @@ import Control.Applicative
 import Control.Monad
 import Data.Char
 import Data.Functor
-import IP
 import Parser
 import SnortRule
 
@@ -88,17 +87,17 @@ snortDirection =
     <|> (strParser "->" $> Bidirectional)
     <|> fail "Invalid direction"
 
-snortIP :: Parser IPv4
+snortIP :: Parser SnortIP
 snortIP =
   anyIp
     <|> ipVariable
     <|> ipParser
     <|> fail "Invalid IP address"
   where
-    anyIp :: Parser IPv4
+    anyIp :: Parser SnortIP
     anyIp = strParser "any" >> return AnyIP
 
-    ipVariable :: Parser IPv4
+    ipVariable :: Parser SnortIP
     ipVariable = Parser $ \input -> do
       (_, input) <- runParser (charParser '$') input
       (variableName, rest) <- runParser (spanParser $ not . isSpace) input
