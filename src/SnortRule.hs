@@ -32,6 +32,14 @@ data SnortPortRange
   | PortRange Int Int
   deriving (Eq, Show)
 
+-- Example: GeneralOptions "msg" "Malicious file download attempt"
+data SnortRuleOption
+  = GeneralOption String String
+  | PayloadOption String String
+  | NonPayloadOption String String
+  | PostDetectionOption String String
+  deriving (Eq, Show)
+
 data SnortRule = SnortRule
   { action :: SnortAction,
     protocol :: SnortProtocol,
@@ -39,6 +47,7 @@ data SnortRule = SnortRule
     srcPort :: SnortPortRange,
     dstPort :: SnortPortRange,
     srcIp :: IPv4,
-    dstIp :: IPv4
+    dstIp :: IPv4,
+    options :: [SnortRuleOption]
   }
-  deriving (Show)
+  deriving (Eq, Show)
