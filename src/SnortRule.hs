@@ -2,7 +2,7 @@ module SnortRule where
 
 import IP (IPv4)
 
--- http://manual-snort-org.s3-website-us-east-1.amazonaws.com/node29.html
+-- https://docs.snort.org/rules/headers/actions
 data SnortAction
   = SnortAlert
   | SnortDrop
@@ -12,6 +12,7 @@ data SnortAction
   | SnortSdrop
   deriving (Eq, Show)
 
+-- https://docs.snort.org/rules/headers/protocols
 data SnortProtocol
   = ICMP
   | IP
@@ -19,11 +20,13 @@ data SnortProtocol
   | UDP
   deriving (Eq, Show)
 
+-- https://docs.snort.org/rules/headers/directions
 data SnortDirection
   = Bidirectional -- <>
   | Unidirectional -- ->
   deriving (Eq, Show)
 
+-- https://docs.snort.org/rules/headers/ports
 data SnortPortRange
   = AnyPort
   | SinglePort Int
@@ -33,6 +36,7 @@ data SnortPortRange
   deriving (Eq, Show)
 
 -- Example: GeneralOptions "msg" "Malicious file download attempt"
+-- https://docs.snort.org/rules/options/
 data SnortRuleOption
   = GeneralOption String String
   | PayloadOption String String
