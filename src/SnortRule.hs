@@ -161,3 +161,28 @@ snortPayloadOptions =
     "s7commplus_func",
     "s7commplus_opcode"
   ]
+
+snortNonPayloadOptions :: [String]
+snortNonPayloadOptions =
+  [ "fragoffset",
+    "ttl",
+    "tos",
+    "id",
+    "ipopts",
+    "fragbits",
+    "ip_proto",
+    "flags",
+    "flow",
+    "flowbits",
+    "file_type",
+    "seq",
+    "ack",
+    "windows",
+    "itype",
+    "icode",
+    "icmp_id",
+    "icmp_seq",
+    "rpc",
+    "stream_reassemble",
+    "stream_size"
+  ]
