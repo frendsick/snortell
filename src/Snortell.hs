@@ -172,5 +172,5 @@ snortOptions = do
     -- => content:"/web_form.php";
     parseOptionValue :: Bool -> Parser String
     parseOptionValue hasColon
-      | hasColon = strLiteralParser
-      | otherwise = return "" -- No colon, so no optionValue
+      | hasColon = spanParser (/= ';') -- Parse until the semicolon
+      | otherwise = return ""
