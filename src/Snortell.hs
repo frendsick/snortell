@@ -138,17 +138,19 @@ snortOptions = do
       maybeWsParser
 
       -- Return the appropriate SnortRuleOption
-      case optionName of
-        name
-          | name `elem` snortGeneralOptions ->
-              return (GeneralOption name (nonEmptyString optionValue))
-          | name `elem` snortPayloadOptions ->
-              return (PayloadOption name (nonEmptyString optionValue))
-          | name `elem` snortNonPayloadOptions ->
-              return (NonPayloadOption name (nonEmptyString optionValue))
-          | name `elem` snortPostDetectionOptions ->
-              return (PostDetectionOption name (nonEmptyString optionValue))
-          | otherwise -> error ("Unknown option type '" ++ name ++ "' for a Snort rule")
+      return $ ruleOption optionName optionValue
+
+    ruleOption :: String -> String -> SnortRuleOption
+    ruleOption name value
+      | name `elem` snortGeneralOptions =
+          GeneralOption name (nonEmptyString value)
+      | name `elem` snortPayloadOptions =
+          PayloadOption name (nonEmptyString value)
+      | name `elem` snortNonPayloadOptions =
+          NonPayloadOption name (nonEmptyString value)
+      | name `elem` snortPostDetectionOptions =
+          PostDetectionOption name (nonEmptyString value)
+      | otherwise = error ("Unknown option type '" ++ name ++ "' for a Snort rule")
 
     nonEmptyString :: String -> Maybe String
     nonEmptyString input =
