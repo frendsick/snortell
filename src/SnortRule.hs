@@ -14,8 +14,7 @@ data SnortAction
 
 -- https://docs.snort.org/rules/headers/protocols
 data SnortProtocol
-  = AAAA
-  | DCE_HTTP_PROXY
+  = DCE_HTTP_PROXY
   | DCE_HTTP_SERVER
   | DCE_SMB
   | DCE_TCP

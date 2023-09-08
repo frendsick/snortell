@@ -75,8 +75,7 @@ snortAction =
 
 snortProtocol :: Parser SnortProtocol
 snortProtocol =
-  strParser "aaaaaaaaaa" $> AAAA
-    <|> strParser "dce_http_proxy" $> DCE_HTTP_PROXY
+  strParser "dce_http_proxy" $> DCE_HTTP_PROXY
     <|> strParser "dce_http_server" $> DCE_HTTP_SERVER
     <|> strParser "dce_smb" $> DCE_SMB
     <|> strParser "dce_tcp" $> DCE_TCP
