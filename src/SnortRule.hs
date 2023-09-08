@@ -14,9 +14,35 @@ data SnortAction
 
 -- https://docs.snort.org/rules/headers/protocols
 data SnortProtocol
-  = ICMP
+  = AAAA
+  | DCE_HTTP_PROXY
+  | DCE_HTTP_SERVER
+  | DCE_SMB
+  | DCE_TCP
+  | DCE_UDP
+  | DNP3
+  | DNS
+  | FTP
+  | HTTP
+  | HTTP2
+  | ICMP
+  | IMAP
   | IP
+  | MODBUS
+  | MMS
+  | NETFLOW
+  | POP3
+  | RPC
+  | S7COMMPLUS
+  | SMB
+  | SMTP
+  | SIP
+  | SSH
+  | SSL
+  | SSLV2
   | TCP
+  | TELNET
+  | TLS
   | UDP
   deriving (Eq, Show)
 

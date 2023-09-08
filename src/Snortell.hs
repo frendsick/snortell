@@ -75,9 +75,35 @@ snortAction =
 
 snortProtocol :: Parser SnortProtocol
 snortProtocol =
-  strParser "icmp" $> ICMP
+  strParser "aaaaaaaaaa" $> AAAA
+    <|> strParser "dce_http_proxy" $> DCE_HTTP_PROXY
+    <|> strParser "dce_http_server" $> DCE_HTTP_SERVER
+    <|> strParser "dce_smb" $> DCE_SMB
+    <|> strParser "dce_tcp" $> DCE_TCP
+    <|> strParser "dce_udp" $> DCE_UDP
+    <|> strParser "dnp3" $> DNP3
+    <|> strParser "dns" $> DNS
+    <|> strParser "ftp" $> FTP
+    <|> strParser "http" $> HTTP
+    <|> strParser "http2" $> HTTP2
+    <|> strParser "icmp" $> ICMP
+    <|> strParser "imap" $> IMAP
     <|> strParser "ip" $> IP
+    <|> strParser "mms" $> MMS
+    <|> strParser "modbus" $> MODBUS
+    <|> strParser "netflow" $> NETFLOW
+    <|> strParser "pop3" $> POP3
+    <|> strParser "rpc" $> RPC
+    <|> strParser "s7commplus" $> S7COMMPLUS
+    <|> strParser "sip" $> SIP
+    <|> strParser "smb" $> SMB
+    <|> strParser "smtp" $> SMTP
+    <|> strParser "ssh" $> SSH
+    <|> strParser "ssl" $> SSL
+    <|> strParser "sslv2" $> SSLV2
     <|> strParser "tcp" $> TCP
+    <|> strParser "telnet" $> TELNET
+    <|> strParser "tls" $> TLS
     <|> strParser "udp" $> UDP
     <|> fail "Unknown protocol"
 
