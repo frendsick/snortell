@@ -3,7 +3,7 @@ module Parser where
 import Control.Applicative
 import Control.Monad
 import Data.Char (isDigit, isSpace)
-import Data.List (singleton)
+import Data.List (isPrefixOf, singleton)
 import IP
 
 newtype Parser a = Parser
@@ -45,16 +45,15 @@ charParser c = Parser parseChar
     parseChar (x : input)
       | x == c = Right (c, input)
       | otherwise =
-          Left
-            ( "Expected character '"
-                ++ singleton c
-                ++ "' but got '"
-                ++ singleton x
-                ++ "'"
-            )
+          Left ("Expected character '" ++ singleton c ++ "' but got '" ++ singleton x ++ "'")
 
 strParser :: String -> Parser String
-strParser = mapM charParser
+strParser expected = Parser parseString
+  where
+    parseString input =
+      if expected `isPrefixOf` input
+        then Right (expected, drop (length expected) input)
+        else Left ("Expecting string '" ++ expected ++ "' but got '" ++ input ++ "'")
 
 intParser :: Parser Int
 intParser = do
