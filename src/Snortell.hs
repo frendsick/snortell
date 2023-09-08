@@ -134,13 +134,6 @@ snortPortRange =
       _ <- charParser ':'
       return (PortRangeFrom start)
 
--- snortOptions :: Parser [SnortRuleOption]
--- snortOptions = Parser $ \input ->
---   if null input
---     then Right ([], input)
---     else -- Return mock data
---       runParser parseSnortOptions input
-
 -- Define a parser for a list of rule options
 snortOptions :: Parser [SnortRuleOption]
 snortOptions = do
