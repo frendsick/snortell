@@ -73,17 +73,13 @@ spanParser f =
     Right (span f input)
 
 ipParser :: Parser IPv4
-ipParser = anyIPParser <|> ipAddressParser
+ipParser =
+  IPv4Address
+    <$> parseOctet
+    <*> (charParser '.' *> parseOctet)
+    <*> (charParser '.' *> parseOctet)
+    <*> (charParser '.' *> parseOctet)
   where
-    anyIPParser = strParser "any" >> return AnyIP
-
-    ipAddressParser =
-      IPv4Address
-        <$> parseOctet
-        <*> (charParser '.' *> parseOctet)
-        <*> (charParser '.' *> parseOctet)
-        <*> (charParser '.' *> parseOctet)
-
     parseOctet :: Parser Int
     parseOctet = do
       digits <- spanParser isDigit
