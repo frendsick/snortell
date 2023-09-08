@@ -84,7 +84,7 @@ snortProtocol =
 snortDirection :: Parser SnortDirection
 snortDirection =
   strParser "<>" $> Bidirectional
-    <|> strParser "->" $> Bidirectional
+    <|> strParser "->" $> Unidirectional
     <|> fail "Invalid direction"
 
 snortIP :: Parser SnortIP
