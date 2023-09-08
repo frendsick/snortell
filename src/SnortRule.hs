@@ -36,6 +36,7 @@ data SnortIP
 -- https://docs.snort.org/rules/headers/ports
 data SnortPortRange
   = AnyPort
+  | PortVariable String
   | SinglePort Int
   | PortRangeFrom Int
   | PortRangeTo Int
