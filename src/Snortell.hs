@@ -32,6 +32,8 @@ parseSnort input = do
   (direction, input) <- runParser (wsParser >> snortDirection) input
   (dstIp, input) <- runParser (wsParser >> snortIP) input
   (dstPort, input) <- runParser (wsParser >> snortPortRange) input
+
+  -- Rule options are not mandatory
   (options, input) <- runParser (optional (wsParser >> snortOptions)) input
   (_, input) <- runParser maybeWsParser input -- Ignore trailing whitespace
 
