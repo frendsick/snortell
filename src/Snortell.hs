@@ -113,6 +113,8 @@ snortPortRange =
       return (PortRangeFrom start)
 
 snortOptions :: Parser [SnortRuleOption]
-snortOptions = Parser $ \_ ->
-  -- Return mock data
-  Right ([GeneralOption "msg" "Malicious file download attempt"], "")
+snortOptions = Parser $ \input ->
+  if null input
+    then Right ([], input)
+    else -- Return mock data
+      Right ([GeneralOption "msg" "Malicious file download attempt"], "")
