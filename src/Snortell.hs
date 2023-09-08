@@ -3,6 +3,7 @@
 module Snortell where
 
 import Control.Applicative
+import Control.Monad
 import Data.Functor
 import IP
 import Parser
@@ -151,14 +152,19 @@ snortOptions = do
       case optionName of
         name
           | name `elem` snortGeneralOptions ->
-              return $ GeneralOption name optionValue
+              return (GeneralOption name (nonEmptyString optionValue))
           | name `elem` snortPayloadOptions ->
-              return $ PayloadOption name optionValue
+              return (PayloadOption name (nonEmptyString optionValue))
           | name `elem` snortNonPayloadOptions ->
-              return $ NonPayloadOption name optionValue
+              return (NonPayloadOption name (nonEmptyString optionValue))
           | name `elem` snortPostDetectionOptions ->
-              return $ PostDetectionOption name optionValue
+              return (PostDetectionOption name (nonEmptyString optionValue))
           | otherwise -> error ("Unknown option type '" ++ name ++ "' for a Snort rule")
+
+    nonEmptyString :: String -> Maybe String
+    nonEmptyString input =
+      guard (not (null input))
+        >> Just input
 
     -- Define a helper function to parse the option value based on the presence of a colon
     -- Examples:

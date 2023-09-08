@@ -40,10 +40,10 @@ data SnortPortRange
 -- Example: GeneralOptions "msg" "Malicious file download attempt"
 -- https://docs.snort.org/rules/options/
 data SnortRuleOption
-  = GeneralOption String String
-  | PayloadOption String String
-  | NonPayloadOption String String
-  | PostDetectionOption String String
+  = GeneralOption String (Maybe String)
+  | PayloadOption String (Maybe String)
+  | NonPayloadOption String (Maybe String)
+  | PostDetectionOption String (Maybe String)
   deriving (Eq, Show)
 
 data SnortRule = SnortRule
