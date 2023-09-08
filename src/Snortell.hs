@@ -6,6 +6,7 @@ import Control.Applicative
 import Control.Monad
 import Data.Char
 import Data.Functor
+import Data.Maybe (isJust)
 import Parser
 import SnortRule
 
@@ -64,8 +65,9 @@ parseSnort input = do
 snortAction :: Parser SnortAction
 snortAction =
   -- Some open source rules start with #
-  maybeCharParser '#' >> actionParser
+  skipOptionalChar '#' >> actionParser
   where
+    actionParser :: Parser SnortAction
     actionParser =
       strParser "alert" $> SnortAlert
         <|> strParser "block" $> SnortBlock
@@ -79,6 +81,11 @@ snortAction =
         <|> strParser "rejectsrc" $> SnortReject -- Same as reject
         <|> strParser "rewrite" $> SnortRewrite
         <|> fail "Unknown action"
+
+    skipOptionalChar :: Char -> Parser Bool
+    skipOptionalChar c = do
+      charFound <- optional (charParser c)
+      return (isJust charFound)
 
 snortProtocol :: Parser SnortProtocol
 snortProtocol =
