@@ -87,10 +87,6 @@ ipParser =
         Just x -> return x
         Nothing -> fail "Invalid IP address octet"
 
--- Parse over mandatory whitespace character
-ws :: String -> Either String (String, String)
-ws = runParser wsParser
-
 -- Parser for one or more whitespaces
 wsParser :: Parser String
 wsParser =
