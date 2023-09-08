@@ -3,6 +3,7 @@
 module Snortell where
 
 import Control.Applicative
+import Control.Monad
 import Data.Functor
 import IP
 import Parser
@@ -31,6 +32,9 @@ parseSnort input = do
   (direction, input) <- runParser (wsParser >> snortDirection) input
   (dstIp, input) <- runParser (wsParser >> snortIP) input
   (dstPort, input) <- runParser (wsParser >> snortPortRange) input
+
+  -- Rule options are not mandatory
+  (options, input) <- runParser (optional (wsParser >> snortOptions)) input
   (_, input) <- runParser maybeWsParser input -- Ignore trailing whitespace
 
   -- Could not parse the full rule if there is input left
@@ -45,17 +49,20 @@ parseSnort input = do
             srcPort,
             dstPort,
             srcIp,
-            dstIp
+            dstIp,
+            options
           }
 
 snortAction :: Parser SnortAction
 snortAction =
   (strParser "alert" $> SnortAlert)
+    <|> (strParser "block" $> SnortBlock)
     <|> (strParser "drop" $> SnortDrop)
     <|> (strParser "log" $> SnortLog)
     <|> (strParser "pass" $> SnortPass)
+    <|> (strParser "react" $> SnortReact)
     <|> (strParser "reject" $> SnortReject)
-    <|> (strParser "sdrop" $> SnortSdrop)
+    <|> (strParser "rewrite" $> SnortRewrite)
     <|> fail "Unknown action"
 
 snortProtocol :: Parser SnortProtocol
@@ -107,3 +114,63 @@ snortPortRange =
       start <- intParser
       _ <- charParser ':'
       return (PortRangeFrom start)
+
+-- snortOptions :: Parser [SnortRuleOption]
+-- snortOptions = Parser $ \input ->
+--   if null input
+--     then Right ([], input)
+--     else -- Return mock data
+--       runParser parseSnortOptions input
+
+-- Define a parser for a list of rule options
+snortOptions :: Parser [SnortRuleOption]
+snortOptions = do
+  strParser "(" <|> fail "Missing opening parentheses '(' after rule options"
+  options <- some ruleOptionsParser <|> fail "Could not parse rule options"
+  strParser ")" <|> fail "Missing closing parentheses ')' after rule options"
+
+  -- Snort rule ends to the options so the whole rule should be parsed
+  remainingInput <- Parser $ \input -> Right (input, input)
+  if null remainingInput
+    then return options
+    else fail "Leftover input characters after parsing Snort options"
+  where
+    ruleOptionsParser :: Parser SnortRuleOption
+    ruleOptionsParser = do
+      optionName <- choiceStrParser allSnortOptions
+
+      -- Parse option value if there is a colon
+      -- Example: content:"/web_form.php";
+      hasColon <- (True <$ charParser ':') <|> pure False
+      optionValue <- parseOptionValue hasColon
+
+      -- Parse the mandatory semicolon and possible whitespace
+      strParser ";"
+      maybeWsParser
+
+      -- Return the appropriate SnortRuleOption
+      case optionName of
+        name
+          | name `elem` snortGeneralOptions ->
+              return (GeneralOption name (nonEmptyString optionValue))
+          | name `elem` snortPayloadOptions ->
+              return (PayloadOption name (nonEmptyString optionValue))
+          | name `elem` snortNonPayloadOptions ->
+              return (NonPayloadOption name (nonEmptyString optionValue))
+          | name `elem` snortPostDetectionOptions ->
+              return (PostDetectionOption name (nonEmptyString optionValue))
+          | otherwise -> error ("Unknown option type '" ++ name ++ "' for a Snort rule")
+
+    nonEmptyString :: String -> Maybe String
+    nonEmptyString input =
+      guard (not (null input))
+        >> Just input
+
+    -- Define a helper function to parse the option value based on the presence of a colon
+    -- Examples:
+    -- => http_uri;
+    -- => content:"/web_form.php";
+    parseOptionValue :: Bool -> Parser String
+    parseOptionValue hasColon
+      | hasColon = spanParser (/= ';') -- Parse until the semicolon
+      | otherwise = return ""
