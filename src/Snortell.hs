@@ -63,18 +63,22 @@ parseSnort input = do
 
 snortAction :: Parser SnortAction
 snortAction =
-  strParser "alert" $> SnortAlert
-    <|> strParser "block" $> SnortBlock
-    <|> strParser "drop" $> SnortDrop
-    <|> strParser "log" $> SnortLog
-    <|> strParser "pass" $> SnortPass
-    <|> strParser "react" $> SnortReact
-    <|> strParser "reject" $> SnortReject
-    <|> strParser "rejectboth" $> SnortRejectBoth
-    <|> strParser "rejectdst" $> SnortRejectDst
-    <|> strParser "rejectsrc" $> SnortReject -- Same as reject
-    <|> strParser "rewrite" $> SnortRewrite
-    <|> fail "Unknown action"
+  -- Some open source rules start with #
+  maybeCharParser '#' >> actionParser
+  where
+    actionParser =
+      strParser "alert" $> SnortAlert
+        <|> strParser "block" $> SnortBlock
+        <|> strParser "drop" $> SnortDrop
+        <|> strParser "log" $> SnortLog
+        <|> strParser "pass" $> SnortPass
+        <|> strParser "react" $> SnortReact
+        <|> strParser "reject" $> SnortReject
+        <|> strParser "rejectboth" $> SnortRejectBoth
+        <|> strParser "rejectdst" $> SnortRejectDst
+        <|> strParser "rejectsrc" $> SnortReject -- Same as reject
+        <|> strParser "rewrite" $> SnortRewrite
+        <|> fail "Unknown action"
 
 snortProtocol :: Parser SnortProtocol
 snortProtocol =

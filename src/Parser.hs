@@ -3,6 +3,7 @@ module Parser where
 import Control.Applicative
 import Data.Char (isDigit, isSpace)
 import Data.List (isPrefixOf, singleton)
+import Data.Maybe (isJust)
 import SnortRule
 import Text.Read (readMaybe)
 
@@ -48,6 +49,11 @@ charParser c = Parser parseChar
       | x == c = Right (c, input)
       | otherwise =
           Left ("Expected character '" ++ singleton c ++ "' but got '" ++ singleton x ++ "'")
+
+maybeCharParser :: Char -> Parser Bool
+maybeCharParser c = do
+  charFound <- optional (charParser c)
+  return (isJust charFound)
 
 strParser :: String -> Parser String
 strParser expected = Parser parseString
