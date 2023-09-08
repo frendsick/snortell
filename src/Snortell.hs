@@ -3,7 +3,6 @@
 module Snortell where
 
 import Control.Applicative
-import Data.Char
 import Data.Functor
 import IP
 import Parser
@@ -166,5 +165,5 @@ snortOptions = do
     -- => content:"/web_form.php";
     parseOptionValue :: Bool -> Parser String
     parseOptionValue hasColon
-      | hasColon = strParser "\"" *> spanParser isAlphaNum <* strParser "\"" -- Parse optionValue
+      | hasColon = strLiteralParser
       | otherwise = return "" -- No colon, so no optionValue
