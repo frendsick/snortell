@@ -61,7 +61,7 @@ parseSnort input = do
 
   -- Could not parse the full rule if there is input left
   if not (null input)
-    then Left "Input is not fully parsed"
+    then Left ("Input is not fully parsed. Remaining: " ++ input)
     else
       Right
         SnortRule
