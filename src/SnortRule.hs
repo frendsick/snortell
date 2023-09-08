@@ -11,6 +11,8 @@ data SnortAction
   | SnortPass
   | SnortReact
   | SnortReject
+  | SnortRejectBoth
+  | SnortRejectDst
   | SnortRewrite
   deriving (Eq, Show)
 

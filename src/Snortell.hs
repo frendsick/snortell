@@ -70,6 +70,9 @@ snortAction =
     <|> strParser "pass" $> SnortPass
     <|> strParser "react" $> SnortReact
     <|> strParser "reject" $> SnortReject
+    <|> strParser "rejectboth" $> SnortRejectBoth
+    <|> strParser "rejectdst" $> SnortRejectDst
+    <|> strParser "rejectsrc" $> SnortReject -- Same as reject
     <|> strParser "rewrite" $> SnortRewrite
     <|> fail "Unknown action"
 
