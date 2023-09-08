@@ -89,16 +89,10 @@ snortDirection =
 
 snortIP :: Parser SnortIP
 snortIP =
-  anyIp
-    <|> ipVariable
+  strParser "any" $> AnyIP
+    <|> IPVariable <$> variableParser
     <|> ipParser
     <|> fail "Invalid IP address"
-  where
-    anyIp :: Parser SnortIP
-    anyIp = strParser "any" >> return AnyIP
-
-    ipVariable :: Parser SnortIP
-    ipVariable = IPVariable <$> variableParser
 
 snortPortRange :: Parser SnortPortRange
 snortPortRange =
