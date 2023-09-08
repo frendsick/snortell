@@ -5,11 +5,13 @@ import IP (IPv4)
 -- https://docs.snort.org/rules/headers/actions
 data SnortAction
   = SnortAlert
+  | SnortBlock
   | SnortDrop
   | SnortLog
   | SnortPass
+  | SnortReact
   | SnortReject
-  | SnortSdrop
+  | SnortRewrite
   deriving (Eq, Show)
 
 -- https://docs.snort.org/rules/headers/protocols

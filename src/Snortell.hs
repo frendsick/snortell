@@ -53,11 +53,13 @@ parseSnort input = do
 snortAction :: Parser SnortAction
 snortAction =
   (strParser "alert" $> SnortAlert)
+    <|> (strParser "block" $> SnortBlock)
     <|> (strParser "drop" $> SnortDrop)
     <|> (strParser "log" $> SnortLog)
     <|> (strParser "pass" $> SnortPass)
+    <|> (strParser "react" $> SnortReact)
     <|> (strParser "reject" $> SnortReject)
-    <|> (strParser "sdrop" $> SnortSdrop)
+    <|> (strParser "rewrite" $> SnortRewrite)
     <|> fail "Unknown action"
 
 snortProtocol :: Parser SnortProtocol
