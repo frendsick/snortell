@@ -1,7 +1,6 @@
 module Parser where
 
 import Control.Applicative
-import Control.Monad
 import Data.Char (isDigit, isSpace)
 import Data.List (isPrefixOf, singleton)
 import SnortRule
