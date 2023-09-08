@@ -143,8 +143,9 @@ snortOptions = do
       hasColon <- (True <$ charParser ':') <|> pure False
       optionValue <- parseOptionValue hasColon
 
-      -- Parse the mandatory semicolon
+      -- Parse the mandatory semicolon and possible whitespace
       strParser ";"
+      maybeWsParser
 
       -- Return the appropriate SnortRuleOption
       case optionName of
