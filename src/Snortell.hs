@@ -8,6 +8,20 @@ import IP
 import Parser
 import SnortRule
 
+-- Parse Snort rule
+--
+-- Example 1: Alert from any TCP traffic
+-- Result: alert tcp any any -> any any
+--
+-- Example 2: Log UDP traffic from 1.1.1.1 to 8.8.8.8 port 53
+-- Result: log udp 1.1.1.1 any -> 8.8.8.8 53
+--
+-- Example 3: Reject ICMP traffic from any IP using ports 444-65535
+--            to any destination with port 0-8000
+-- Result: reject icmp any 444: -> any :8000
+--
+-- Example 4: Let any IP traffic pass to destination ports 8000-8080
+-- Result: pass ip any any -> any 8000:8080
 parseSnort :: String -> Either String SnortRule
 parseSnort input = do
   (action, input) <- runParser (maybeWsParser >> snortAction) input -- Ignore leading whitespace
