@@ -30,7 +30,8 @@ data SnortDirection
   deriving (Eq, Show)
 
 data SnortPortRange
-  = SinglePort Int
+  = AnyPort
+  | SinglePort Int
   | PortRangeFrom Int
   | PortRangeTo Int
   | PortRange Int Int
@@ -103,12 +104,15 @@ snortIP = anyIp <|> ipParser
 
 snortPortRange :: Parser SnortPortRange
 snortPortRange =
-  portRange
+  anyPort
+    <|> portRange
     <|> portRangeFrom
     <|> portRangeTo
     <|> singlePort
     <|> fail "Could not parse port range"
   where
+    anyPort = strParser "any" >> return AnyPort
+
     singlePort :: Parser SnortPortRange
     singlePort = SinglePort <$> intParser
 
