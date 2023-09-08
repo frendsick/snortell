@@ -55,6 +55,12 @@ strParser expected = Parser parseString
         then Right (expected, drop (length expected) input)
         else Left ("Expecting string '" ++ expected ++ "' but got '" ++ input ++ "'")
 
+-- String literal parser parses anything that are inside double quotes
+-- TODO: Escape sequences with backslash (\n, \\, \", etc.)
+strLiteralParser :: Parser String
+strLiteralParser =
+  charParser '"' *> spanParser (/= '"') <* charParser '"'
+
 choiceStrParser :: [String] -> Parser String
 choiceStrParser = foldr ((<|>) . strParser) empty
 
