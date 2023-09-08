@@ -63,28 +63,28 @@ parseSnort input = do
 
 snortAction :: Parser SnortAction
 snortAction =
-  (strParser "alert" $> SnortAlert)
-    <|> (strParser "block" $> SnortBlock)
-    <|> (strParser "drop" $> SnortDrop)
-    <|> (strParser "log" $> SnortLog)
-    <|> (strParser "pass" $> SnortPass)
-    <|> (strParser "react" $> SnortReact)
-    <|> (strParser "reject" $> SnortReject)
-    <|> (strParser "rewrite" $> SnortRewrite)
+  strParser "alert" $> SnortAlert
+    <|> strParser "block" $> SnortBlock
+    <|> strParser "drop" $> SnortDrop
+    <|> strParser "log" $> SnortLog
+    <|> strParser "pass" $> SnortPass
+    <|> strParser "react" $> SnortReact
+    <|> strParser "reject" $> SnortReject
+    <|> strParser "rewrite" $> SnortRewrite
     <|> fail "Unknown action"
 
 snortProtocol :: Parser SnortProtocol
 snortProtocol =
-  (strParser "icmp" $> ICMP)
-    <|> (strParser "ip" $> IP)
-    <|> (strParser "tcp" $> TCP)
-    <|> (strParser "udp" $> UDP)
+  strParser "icmp" $> ICMP
+    <|> strParser "ip" $> IP
+    <|> strParser "tcp" $> TCP
+    <|> strParser "udp" $> UDP
     <|> fail "Unknown protocol"
 
 snortDirection :: Parser SnortDirection
 snortDirection =
-  (strParser "<>" $> Bidirectional)
-    <|> (strParser "->" $> Bidirectional)
+  strParser "<>" $> Bidirectional
+    <|> strParser "->" $> Bidirectional
     <|> fail "Invalid direction"
 
 snortIP :: Parser SnortIP
