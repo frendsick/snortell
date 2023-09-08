@@ -189,7 +189,7 @@ snortOptions = do
       | hasColon = spanParser (/= ';') -- Parse until the semicolon
       | otherwise = return ""
 
+-- Parser for variables that start with the dollar sign
+-- Example: $HOME_NET
 variableParser :: Parser String
-variableParser = Parser $ \input -> do
-  (_, input) <- runParser (charParser '$') input
-  runParser (spanParser $ not . isSpace) input
+variableParser = charParser '$' *> spanParser (not . isSpace)
