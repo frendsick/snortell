@@ -55,6 +55,9 @@ strParser expected = Parser parseString
         then Right (expected, drop (length expected) input)
         else Left ("Expecting string '" ++ expected ++ "' but got '" ++ input ++ "'")
 
+choiceStrParser :: [String] -> Parser String
+choiceStrParser = foldr ((<|>) . strParser) empty
+
 intParser :: Parser Int
 intParser = do
   digits <- spanParser isDigit
