@@ -51,3 +51,18 @@ data SnortRule = SnortRule
     options :: [SnortRuleOption]
   }
   deriving (Eq, Show)
+
+snortGeneralOptions :: [String]
+snortGeneralOptions =
+  [ "msg",
+    "reference",
+    "gid",
+    "sid",
+    "rev",
+    "classtype",
+    "priority",
+    "metadata",
+    "service",
+    "rem",
+    "file_meta"
+  ]
