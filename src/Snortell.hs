@@ -83,28 +83,38 @@ snortProtocol =
     <|> strParser "dce_smb" $> DCE_SMB
     <|> strParser "dce_tcp" $> DCE_TCP
     <|> strParser "dce_udp" $> DCE_UDP
+    <|> strParser "dcerpc" $> DCERPC
+    <|> strParser "dhcp" $> DHCP
     <|> strParser "dnp3" $> DNP3
     <|> strParser "dns" $> DNS
+    <|> strParser "enip" $> ENIP
     <|> strParser "ftp" $> FTP
     <|> strParser "http" $> HTTP
     <|> strParser "http2" $> HTTP2
     <|> strParser "icmp" $> ICMP
+    <|> strParser "ikev2" $> IKEV2
     <|> strParser "imap" $> IMAP
     <|> strParser "ip" $> IP
+    <|> strParser "krb5" $> KRB5
     <|> strParser "mms" $> MMS
     <|> strParser "modbus" $> MODBUS
     <|> strParser "netflow" $> NETFLOW
+    <|> strParser "ntp" $> NTP
     <|> strParser "pop3" $> POP3
+    <|> strParser "rdp" $> RDP
+    <|> strParser "rfp" $> RFP
     <|> strParser "rpc" $> RPC
     <|> strParser "s7commplus" $> S7COMMPLUS
     <|> strParser "sip" $> SIP
     <|> strParser "smb" $> SMB
     <|> strParser "smtp" $> SMTP
+    <|> strParser "snmp" $> SNMP
     <|> strParser "ssh" $> SSH
     <|> strParser "ssl" $> SSL
     <|> strParser "sslv2" $> SSLV2
     <|> strParser "tcp" $> TCP
     <|> strParser "telnet" $> TELNET
+    <|> strParser "tftp" $> TFTP
     <|> strParser "tls" $> TLS
     <|> strParser "udp" $> UDP
     <|> fail "Unknown protocol"

@@ -23,27 +23,37 @@ data SnortProtocol
   | DCE_SMB
   | DCE_TCP
   | DCE_UDP
+  | DCERPC
+  | DHCP
   | DNP3
   | DNS
+  | ENIP
   | FTP
   | HTTP
   | HTTP2
   | ICMP
+  | IKEV2
   | IMAP
   | IP
+  | KRB5
   | MODBUS
   | MMS
   | NETFLOW
+  | NTP
   | POP3
+  | RDP
+  | RFP
   | RPC
   | S7COMMPLUS
+  | SIP
   | SMB
   | SMTP
-  | SIP
+  | SNMP
   | SSH
   | SSL
   | SSLV2
   | TCP
+  | TFTP
   | TELNET
   | TLS
   | UDP
