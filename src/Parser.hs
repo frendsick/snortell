@@ -35,9 +35,11 @@ instance MonadFail Parser where
 instance Alternative Parser where
   empty = Parser $ const (Left "Empty parser")
 
-  (Parser p1) <|> (Parser p2) = Parser $ \input -> case p1 input of
-    Left _ -> p2 input
-    result -> result
+  (Parser p1) <|> (Parser p2) =
+    Parser $ \input ->
+      case p1 input of
+        Left _ -> p2 input
+        result -> result
 
 charParser :: Char -> Parser Char
 charParser c = Parser parseChar
