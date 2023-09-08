@@ -104,31 +104,12 @@ snortPortRange =
     <|> singlePort
     <|> fail "Could not parse port range"
   where
-    anyPort :: Parser SnortPortRange
     anyPort = strParser "any" >> return AnyPort
-
-    portVariable :: Parser SnortPortRange
     portVariable = PortVariable <$> variableParser
-
-    singlePort :: Parser SnortPortRange
+    portRange = PortRange <$> (intParser <* charParser ':') <*> intParser
+    portRangeFrom = PortRangeFrom <$> (intParser <* charParser ':')
+    portRangeTo = PortRangeTo <$> (charParser ':' *> intParser)
     singlePort = SinglePort <$> intParser
-
-    portRange :: Parser SnortPortRange
-    portRange = do
-      start <- intParser
-      _ <- charParser ':'
-      PortRange start <$> intParser
-
-    portRangeTo :: Parser SnortPortRange
-    portRangeTo = do
-      _ <- charParser ':'
-      PortRangeTo <$> intParser
-
-    portRangeFrom :: Parser SnortPortRange
-    portRangeFrom = do
-      start <- intParser
-      _ <- charParser ':'
-      return (PortRangeFrom start)
 
 -- Define a parser for a list of rule options
 snortOptions :: Parser [SnortRuleOption]
