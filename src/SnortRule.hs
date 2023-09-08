@@ -186,3 +186,10 @@ snortNonPayloadOptions =
     "stream_reassemble",
     "stream_size"
   ]
+
+snortPostDetectionOptions :: [String]
+snortPostDetectionOptions =
+  [ "detection_filter",
+    "replace",
+    "tag"
+  ]
