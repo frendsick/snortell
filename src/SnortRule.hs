@@ -58,6 +58,13 @@ data SnortRule = SnortRule
   }
   deriving (Eq, Show)
 
+allSnortOptions :: [String]
+allSnortOptions =
+  snortGeneralOptions
+    ++ snortPayloadOptions
+    ++ snortNonPayloadOptions
+    ++ snortPostDetectionOptions
+
 snortGeneralOptions :: [String]
 snortGeneralOptions =
   [ "msg",

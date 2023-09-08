@@ -3,6 +3,7 @@
 module Snortell where
 
 import Control.Applicative
+import Data.Char
 import Data.Functor
 import IP
 import Parser
@@ -112,9 +113,56 @@ snortPortRange =
       _ <- charParser ':'
       return (PortRangeFrom start)
 
+-- snortOptions :: Parser [SnortRuleOption]
+-- snortOptions = Parser $ \input ->
+--   if null input
+--     then Right ([], input)
+--     else -- Return mock data
+--       runParser parseSnortOptions input
+
+-- Define a parser for a list of rule options
 snortOptions :: Parser [SnortRuleOption]
-snortOptions = Parser $ \input ->
-  if null input
-    then Right ([], input)
-    else -- Return mock data
-      Right ([GeneralOption "msg" "Malicious file download attempt"], "")
+snortOptions = do
+  strParser "("
+  options <- many ruleOptionsParser
+  strParser ")"
+
+  -- Snort rule ends to the options so the whole rule should be parsed
+  remainingInput <- Parser $ \input -> Right (input, input)
+  if null remainingInput
+    then return options
+    else fail "Leftover input characters after parsing Snort options"
+  where
+    ruleOptionsParser :: Parser SnortRuleOption
+    ruleOptionsParser = do
+      optionName <- choiceStrParser allSnortOptions
+
+      -- Parse option value if there is a colon
+      -- Example: content:"/web_form.php";
+      hasColon <- (True <$ charParser ':') <|> pure False
+      optionValue <- parseOptionValue hasColon
+
+      -- Parse the mandatory semicolon
+      strParser ";"
+
+      -- Return the appropriate SnortRuleOption
+      case optionName of
+        name
+          | name `elem` snortGeneralOptions ->
+              return $ GeneralOption name optionValue
+          | name `elem` snortPayloadOptions ->
+              return $ PayloadOption name optionValue
+          | name `elem` snortNonPayloadOptions ->
+              return $ NonPayloadOption name optionValue
+          | name `elem` snortPostDetectionOptions ->
+              return $ PostDetectionOption name optionValue
+          | otherwise -> error ("Unknown option type '" ++ name ++ "' for a Snort rule")
+
+    -- Define a helper function to parse the option value based on the presence of a colon
+    -- Examples:
+    -- => http_uri;
+    -- => content:"/web_form.php";
+    parseOptionValue :: Bool -> Parser String
+    parseOptionValue hasColon
+      | hasColon = strParser "\"" *> spanParser isAlphaNum <* strParser "\"" -- Parse optionValue
+      | otherwise = return "" -- No colon, so no optionValue
