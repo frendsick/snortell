@@ -4,6 +4,7 @@ module Snortell where
 
 import Control.Applicative
 import Control.Monad
+import Data.Char
 import Data.Functor
 import IP
 import Parser
@@ -12,17 +13,25 @@ import SnortRule
 -- Parse Snort rule
 --
 -- Example 1: Alert from any TCP traffic
--- Result: alert tcp any any -> any any
+-- `alert tcp any any -> any any`
 --
 -- Example 2: Log UDP traffic from 1.1.1.1 to 8.8.8.8 port 53
--- Result: log udp 1.1.1.1 any -> 8.8.8.8 53
+-- `log udp 1.1.1.1 any -> 8.8.8.8 53 (msg:"DNS";)`
 --
 -- Example 3: Reject ICMP traffic from any IP using ports 444-65535
 --            to any destination with port 0-8000
--- Result: reject icmp any 444: -> any :8000
+-- `reject icmp any 444: -> any :8000`
 --
 -- Example 4: Let any IP traffic pass to destination ports 8000-8080
--- Result: pass ip any any -> any 8000:8080
+-- `pass ip any any -> any 8000:8080`
+--
+-- Example 5: Example rule from https://hackertarget.com/snort-tutorial-practical-examples/
+-- ```
+-- alert tcp $EXTERNAL_NET any -> $HOME_NET any
+-- (msg:"APP-DETECT VNC server response"; flow:established;
+-- content:"RFB 0"; depth:5; content:".0"; depth:2; offset:7;
+-- metadata:ruleset community; classtype:misc-activity; sid:560; rev:9;)
+-- ```
 parseSnort :: String -> Either String SnortRule
 parseSnort input = do
   (action, input) <- runParser (maybeWsParser >> snortAction) input -- Ignore leading whitespace
@@ -80,9 +89,20 @@ snortDirection =
     <|> fail "Invalid direction"
 
 snortIP :: Parser IPv4
-snortIP = anyIp <|> ipParser
+snortIP =
+  anyIp
+    <|> ipVariable
+    <|> ipParser
+    <|> fail "Invalid IP address"
   where
+    anyIp :: Parser IPv4
     anyIp = strParser "any" >> return AnyIP
+
+    ipVariable :: Parser IPv4
+    ipVariable = Parser $ \input -> do
+      (_, input) <- runParser (charParser '$') input
+      (variableName, rest) <- runParser (spanParser $ not . isSpace) input
+      return (IPVariable variableName, rest)
 
 snortPortRange :: Parser SnortPortRange
 snortPortRange =
