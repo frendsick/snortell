@@ -78,18 +78,19 @@ spanParser f =
     Right (span f input)
 
 ipParser :: Parser SnortIP
-ipParser = do
-  octet1 <- intParser <* charParser '.'
-  octet2 <- intParser <* charParser '.'
-  octet3 <- intParser <* charParser '.'
-  octet4 <- intParser
-  if all isValidOctet [octet1, octet2, octet3, octet4]
-    then return (IPv4Address octet1 octet2 octet3 octet4)
-    else fail "Invalid IP address"
+ipParser =
+  IPv4Address
+    <$> (ipOctetParser <* charParser '.')
+    <*> (ipOctetParser <* charParser '.')
+    <*> (ipOctetParser <* charParser '.')
+    <*> ipOctetParser
   where
-    isValidOctet :: Int -> Bool
-    isValidOctet octet =
-      octet >= 0 && octet <= 255
+    ipOctetParser :: Parser Int
+    ipOctetParser = intParser >>= validateOctet
+      where
+        validateOctet octet
+          | octet >= 0 && octet <= 255 = return octet
+          | otherwise = fail "Invalid IP address"
 
 -- Parser for one or more whitespaces
 wsParser :: Parser String
