@@ -5,6 +5,7 @@ import Control.Monad
 import Data.Char (isDigit, isSpace)
 import Data.List (isPrefixOf, singleton)
 import SnortRule
+import Text.Read (readMaybe)
 
 newtype Parser a = Parser
   { runParser :: String -> Either String (a, String)
@@ -67,14 +68,9 @@ choiceStrParser = foldr ((<|>) . strParser) empty
 intParser :: Parser Int
 intParser = do
   digits <- spanParser isDigit
-  case maybeInt digits of
+  case readMaybe digits of
     Just x -> return x
     Nothing -> fail "Invalid port"
-
-maybeInt :: String -> Maybe Int
-maybeInt input = case reads input of
-  [(x, "")] -> Just x
-  _ -> Nothing
 
 spanParser :: (Char -> Bool) -> Parser String
 spanParser f =
