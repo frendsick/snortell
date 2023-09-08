@@ -54,7 +54,7 @@ data SnortRule = SnortRule
     dstPort :: SnortPortRange,
     srcIp :: IPv4,
     dstIp :: IPv4,
-    options :: [SnortRuleOption]
+    options :: Maybe [SnortRuleOption]
   }
   deriving (Eq, Show)
 

@@ -32,7 +32,7 @@ parseSnort input = do
   (direction, input) <- runParser (wsParser >> snortDirection) input
   (dstIp, input) <- runParser (wsParser >> snortIP) input
   (dstPort, input) <- runParser (wsParser >> snortPortRange) input
-  (options, input) <- runParser (wsParser >> snortOptions) input
+  (options, input) <- runParser (optional (wsParser >> snortOptions)) input
   (_, input) <- runParser maybeWsParser input -- Ignore trailing whitespace
 
   -- Could not parse the full rule if there is input left
