@@ -98,7 +98,7 @@ snortIP =
     anyIp = strParser "any" >> return AnyIP
 
     ipVariable :: Parser SnortIP
-    ipVariable = IPVariable <$> parseVariable
+    ipVariable = IPVariable <$> variableParser
 
 snortPortRange :: Parser SnortPortRange
 snortPortRange =
@@ -114,7 +114,7 @@ snortPortRange =
     anyPort = strParser "any" >> return AnyPort
 
     portVariable :: Parser SnortPortRange
-    portVariable = PortVariable <$> parseVariable
+    portVariable = PortVariable <$> variableParser
 
     singlePort :: Parser SnortPortRange
     singlePort = SinglePort <$> intParser
@@ -189,7 +189,7 @@ snortOptions = do
       | hasColon = spanParser (/= ';') -- Parse until the semicolon
       | otherwise = return ""
 
-parseVariable :: Parser String
-parseVariable = Parser $ \input -> do
+variableParser :: Parser String
+variableParser = Parser $ \input -> do
   (_, input) <- runParser (charParser '$') input
   runParser (spanParser $ not . isSpace) input
