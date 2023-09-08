@@ -50,13 +50,21 @@ data SnortRule = SnortRule
 
 parseSnort :: String -> Either String SnortRule
 parseSnort input = do
-  (input, action) <- parseWithWS snortAction input
-  (input, protocol) <- parseWithWS snortProtocol input
-  (input, srcIp) <- parseWithWS snortIP input
-  (input, srcPort) <- parseWithWS snortPortRange input
-  (input, direction) <- parseWithWS snortDirection input
-  (input, dstIp) <- parseWithWS snortIP input
-  (input, dstPort) <- parseWithWS snortPortRange input
+  (_, input) <- runParser maybeWsParser input -- Ignore leading whitespace
+  (action, input) <- runParser snortAction input
+  (_, input) <- ws input
+  (protocol, input) <- runParser snortProtocol input
+  (_, input) <- ws input
+  (srcIp, input) <- runParser snortIP input
+  (_, input) <- ws input
+  (srcPort, input) <- runParser snortPortRange input
+  (_, input) <- ws input
+  (direction, input) <- runParser snortDirection input
+  (_, input) <- ws input
+  (dstIp, input) <- runParser snortIP input
+  (_, input) <- ws input
+  (dstPort, input) <- runParser snortPortRange input
+  (_, input) <- runParser maybeWsParser input -- Ignore trailing whitespace
 
   -- Could not parse the full rule if there is input left
   if not (null input)

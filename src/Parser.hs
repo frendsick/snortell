@@ -87,12 +87,18 @@ ipParser =
         Just x -> return x
         Nothing -> fail "Invalid IP address octet"
 
-ws :: Parser String
-ws = spanParser isSpace
+-- Parse over mandatory whitespace character
+ws :: String -> Either String (String, String)
+ws = runParser wsParser
 
-parseWithWS :: Parser a -> String -> Either String (String, a)
-parseWithWS parser input = do
-  (_, input) <- runParser ws input
-  (result, input) <- runParser parser input
-  (_, input) <- runParser ws input
-  Right (input, result)
+-- Parser for one or more whitespaces
+wsParser :: Parser String
+wsParser =
+  maybeWsParser >>= \parsedWs ->
+    if null parsedWs
+      then fail "Expected whitespace"
+      else pure parsedWs
+
+-- Parser for zero or more whitespaces
+maybeWsParser :: Parser String
+maybeWsParser = spanParser isSpace
