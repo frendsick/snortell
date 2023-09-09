@@ -68,7 +68,7 @@ snortAction = do
   -- Example: #alert
   optional (charParser '#') -- Ignore '#' if present
   action <- spanParser isLetter
-  maybe (fail ("Unknown protocol '" ++ action ++ "'")) return (getSnortAction action)
+  maybe (fail ("Unknown action '" ++ action ++ "'")) return (getSnortAction action)
 
 snortProtocol :: Parser SnortProtocol
 snortProtocol = do
