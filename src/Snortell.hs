@@ -81,6 +81,11 @@ snortDirection =
     <|> strParser "->" $> Unidirectional
     <|> fail "Invalid direction"
 
+-- Parser for variables that start with the dollar sign
+-- Example: $HOME_NET
+variableParser :: Parser String
+variableParser = charParser '$' *> spanParser (not . isSpace)
+
 snortIP :: Parser SnortIP
 snortIP =
   strParser "any" $> AnyIP
@@ -160,8 +165,3 @@ snortOptions = do
     parseOptionValue hasColon
       | hasColon = spanParser (/= ';') -- Parse until the semicolon
       | otherwise = return ""
-
--- Parser for variables that start with the dollar sign
--- Example: $HOME_NET
-variableParser :: Parser String
-variableParser = charParser '$' *> spanParser (not . isSpace)
