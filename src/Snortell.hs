@@ -64,18 +64,11 @@ parseSnort input = do
 
 snortAction :: Parser SnortAction
 snortAction = do
-  -- Some suricata rule actions in the wild started with #, ignore it
+  -- Some rule actions in open source suricata rules started with #
   -- Example: #alert
-  skipOptionalChar '#' >> actionParser
-  where
-    actionParser :: Parser SnortAction
-    actionParser = do
-      action <- spanParser isLetter
-      return $ fromMaybe (error "Unknown action") (getSnortAction action)
-    skipOptionalChar :: Char -> Parser Bool
-    skipOptionalChar c = do
-      charFound <- optional (charParser c)
-      return (isJust charFound)
+  optional (charParser '#') -- Ignore '#' if present
+  action <- spanParser isLetter
+  maybe (fail "Unknown action") return (getSnortAction action)
 
 snortProtocol :: Parser SnortProtocol
 snortProtocol = do
