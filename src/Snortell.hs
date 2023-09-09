@@ -73,7 +73,7 @@ snortAction = do
 snortProtocol :: Parser SnortProtocol
 snortProtocol = do
   protocol <- spanParser isLetter
-  return $ fromMaybe (error "Unknown protocol") (getSnortProtocol protocol)
+  maybe (fail ("Unknown protocol '" ++ protocol ++ "'")) return (getSnortProtocol protocol)
 
 snortDirection :: Parser SnortDirection
 snortDirection =
