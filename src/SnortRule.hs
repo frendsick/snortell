@@ -1,5 +1,6 @@
 module SnortRule where
 
+import Data.Char (toLower)
 import Data.List (sortOn)
 
 -- https://docs.snort.org/rules/headers/actions
@@ -14,7 +15,26 @@ data SnortAction
   | SnortRejectBoth
   | SnortRejectDst
   | SnortRewrite
-  deriving (Eq, Show)
+  deriving (Eq, Show, Bounded, Enum)
+
+-- Generate a map for Snort action strings and SnortAction enum
+-- [("alert",SnortAlert),("block",SnortBlock),...)]
+snortActionMap :: [(String, SnortAction)]
+snortActionMap =
+  [ ( map toLower
+        . drop 5 -- Ignore "Snort" prefix
+        . show
+        $ action,
+      action
+    )
+    | action <- [minBound .. maxBound]
+  ]
+
+-- Get matching SnortAlert for the parameter string
+-- Example: getSnortAction "alert" -> Just SnortAlert
+-- Example: getSnortAction "nonexistent" -> Nothing
+getSnortAction :: String -> Maybe SnortAction
+getSnortAction str = lookup str snortActionMap
 
 -- https://docs.snort.org/rules/headers/protocols
 data SnortProtocol
@@ -57,7 +77,25 @@ data SnortProtocol
   | TELNET
   | TLS
   | UDP
-  deriving (Eq, Show)
+  deriving (Eq, Show, Bounded, Enum)
+
+-- Generate a map for Snort protocol strings and SnortProtocol enum
+-- [("dce_http_proxy",DCE_HTTP_PROXY),("dce_http_server",DCE_HTTP_SERVER),...]
+snortProtocolMap :: [(String, SnortProtocol)]
+snortProtocolMap =
+  [ ( map toLower
+        . show
+        $ protocol,
+      protocol
+    )
+    | protocol <- [minBound .. maxBound]
+  ]
+
+-- Get matching SnortProtocol for the input string
+-- Example: getSnortProtocol "tcp" --> Just TCP
+-- Example: getSnortProtocol "nonexistent" -> Nothing
+getSnortProtocol :: String -> Maybe SnortProtocol
+getSnortProtocol str = lookup str snortProtocolMap
 
 -- https://docs.snort.org/rules/headers/directions
 data SnortDirection

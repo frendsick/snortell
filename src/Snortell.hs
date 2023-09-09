@@ -6,7 +6,7 @@ import Control.Applicative
 import Control.Monad
 import Data.Char
 import Data.Functor
-import Data.Maybe (isJust)
+import Data.Maybe
 import Parser
 import SnortRule
 
@@ -63,72 +63,24 @@ parseSnort input = do
           }
 
 snortAction :: Parser SnortAction
-snortAction =
-  -- Some open source rules start with #
+snortAction = do
+  -- Some suricata rule actions in the wild started with #, ignore it
+  -- Example: #alert
   skipOptionalChar '#' >> actionParser
   where
     actionParser :: Parser SnortAction
-    actionParser =
-      strParser "alert" $> SnortAlert
-        <|> strParser "block" $> SnortBlock
-        <|> strParser "drop" $> SnortDrop
-        <|> strParser "log" $> SnortLog
-        <|> strParser "pass" $> SnortPass
-        <|> strParser "react" $> SnortReact
-        <|> strParser "reject" $> SnortReject
-        <|> strParser "rejectboth" $> SnortRejectBoth
-        <|> strParser "rejectdst" $> SnortRejectDst
-        <|> strParser "rejectsrc" $> SnortReject -- Same as reject
-        <|> strParser "rewrite" $> SnortRewrite
-        <|> fail "Unknown action"
-
+    actionParser = do
+      action <- spanParser isLetter
+      return $ fromMaybe (error "Unknown action") (getSnortAction action)
     skipOptionalChar :: Char -> Parser Bool
     skipOptionalChar c = do
       charFound <- optional (charParser c)
       return (isJust charFound)
 
 snortProtocol :: Parser SnortProtocol
-snortProtocol =
-  strParser "dce_http_proxy" $> DCE_HTTP_PROXY
-    <|> strParser "dce_http_server" $> DCE_HTTP_SERVER
-    <|> strParser "dce_smb" $> DCE_SMB
-    <|> strParser "dce_tcp" $> DCE_TCP
-    <|> strParser "dce_udp" $> DCE_UDP
-    <|> strParser "dcerpc" $> DCERPC
-    <|> strParser "dhcp" $> DHCP
-    <|> strParser "dnp3" $> DNP3
-    <|> strParser "dns" $> DNS
-    <|> strParser "enip" $> ENIP
-    <|> strParser "ftp" $> FTP
-    <|> strParser "http" $> HTTP
-    <|> strParser "http2" $> HTTP2
-    <|> strParser "icmp" $> ICMP
-    <|> strParser "ikev2" $> IKEV2
-    <|> strParser "imap" $> IMAP
-    <|> strParser "ip" $> IP
-    <|> strParser "krb5" $> KRB5
-    <|> strParser "mms" $> MMS
-    <|> strParser "modbus" $> MODBUS
-    <|> strParser "netflow" $> NETFLOW
-    <|> strParser "ntp" $> NTP
-    <|> strParser "pop3" $> POP3
-    <|> strParser "rdp" $> RDP
-    <|> strParser "rfp" $> RFP
-    <|> strParser "rpc" $> RPC
-    <|> strParser "s7commplus" $> S7COMMPLUS
-    <|> strParser "sip" $> SIP
-    <|> strParser "smb" $> SMB
-    <|> strParser "smtp" $> SMTP
-    <|> strParser "snmp" $> SNMP
-    <|> strParser "ssh" $> SSH
-    <|> strParser "ssl" $> SSL
-    <|> strParser "sslv2" $> SSLV2
-    <|> strParser "tcp" $> TCP
-    <|> strParser "telnet" $> TELNET
-    <|> strParser "tftp" $> TFTP
-    <|> strParser "tls" $> TLS
-    <|> strParser "udp" $> UDP
-    <|> fail "Unknown protocol"
+snortProtocol = do
+  protocol <- spanParser isLetter
+  return $ fromMaybe (error "Unknown protocol") (getSnortProtocol protocol)
 
 snortDirection :: Parser SnortDirection
 snortDirection =
