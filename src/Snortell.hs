@@ -6,7 +6,6 @@ import Control.Applicative
 import Control.Monad
 import Data.Char
 import Data.Functor
-import Data.Maybe
 import Parser
 import SnortRule
 
